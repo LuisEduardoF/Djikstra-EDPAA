@@ -5,10 +5,47 @@ class Dijkstra():
         self.graph = graph
         self.initial_node = initial_node
 
+    def lineage(self, visited, node):
+        lineage = [node]
+        while True:
+            if visited[node] is None:
+                return []
+            node = visited[node]
+            lineage.append(node)
+            
+            if node == visited[node]: # Initial Node Case
+                break
+            
+        return lineage
+
+    def output(self, distances, visited, order, output_path):
+        # print("ORDER:", order)
+        with open(output_path, "w") as f:
+            for node in order:
+                f.write("SHORTEST PATH TO ")
+                
+                # Which Node?
+                f.write(f"node_{node}: ")
+                
+                # Lineage
+                lineage = self.lineage(visited, node)
+                
+                lineage_str = " <- ".join([f"node_{n}" for n in lineage])
+                
+                f.write(lineage_str + " ")
+                
+                # Distance
+                f.write(f"(Distance: {distances[node]:.2f})\n")
+                
+            
     def dijkstra(self):
-        distances = {node: float('inf') for node in self.graph}
-        print("Distances initialized:", distances)
-        visited = {}
+        distances = [float('inf')] * len(self.graph)
+        distances[self.initial_node] = 0
+        
+        # print("Distances initialized:", distances)
+        visited = [None] * len(self.graph)
+        order = []
+        
         heap = Heap()
         heap.insert((0, self.initial_node, None))  # (distance, node, previous_node)
         
@@ -16,25 +53,19 @@ class Dijkstra():
             current_distance, current_node, previous_node = heap.extract_min()
             
             # print(f"Processing node_{current_node} with current_distance {current_distance}, distances: {int(current_node) == self.initial_node:}")
-            if current_node in visited:
+            if visited[current_node] is not None:
                 continue
-
-            visited[current_node] = visited[previous_node] + [current_node] if previous_node is not None else [current_node]
-        
             
-            print(f"SHORTEST PATH TO node_{current_node}:", end=" ")
-            for node in visited[current_node][::-1]:
-                if node != self.initial_node:
-                    print(f"node_{node} <-", end=" ")
-                else:
-                    print(f"node_{node}", end=" ")
-            print(f"(Distance: {current_distance:.2f})")
+            visited[current_node] = previous_node if previous_node is not None else current_node
 
+            order.append(current_node)
+            
             for neighbor, weight in self.graph[current_node].items():
-                if neighbor not in visited:
+                if visited[neighbor] is None:
+                # if neighbor not in visited:
                     new_distance = current_distance + weight
-                    if new_distance < distances[int(neighbor)]:
-                        distances[int(neighbor)] = new_distance
+                    if new_distance < distances[neighbor]:
+                        distances[neighbor] = new_distance
                         heap.insert((new_distance, neighbor, current_node))
                 
-        return distances, visited
+        return distances, visited, order
