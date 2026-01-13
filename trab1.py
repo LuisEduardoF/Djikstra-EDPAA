@@ -5,21 +5,24 @@ import time
 import tracemalloc
 
 
-
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("ERRO NA EXECUÇÃO: python3 trab1.py <input_path> <output_path>")
         sys.exit(1)
-        
+    
+    # Le os argumentos
     input_path = sys.argv[1]
     output_path = sys.argv[2]
     
+    # Define o grafo e o node inicial
     graph, initial_node = read_file(input_path)
-        
+    
+    # Define o TAD Dijkstra
     dijkstra_solver = Dijkstra(graph, initial_node)
     
     tracemalloc.start()
     begin_time_original = time.time()
+    # Executa o Dijkstra
     distances, visited, order = dijkstra_solver.dijkstra()
     end_time_original = time.time()
     current, peak = tracemalloc.get_traced_memory()
@@ -30,6 +33,7 @@ if __name__ == "__main__":
     print(f"Current memory usage: {current / 1024:.2f} KB")
     print(f"Peak memory usage: {peak / 1024:.2f} KB")
     
+    # Gera o output com a lineagem e distancias
     dijkstra_solver.output(distances, visited, order, output_path)
     
     

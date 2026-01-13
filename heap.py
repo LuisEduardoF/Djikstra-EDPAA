@@ -1,7 +1,8 @@
 class Heap():
     def __init__(self):
-        self.heap = []
+        self.heap = [] # Inicializa o heap como uma lista vazia
     
+    # Funções aux classicas de heap
     def parent(self, i):
         return (i - 1) // 2
     
@@ -18,24 +19,29 @@ class Heap():
         self.heap.append(key)
         self._heapify_up(len(self.heap) - 1)
     
+    # Funcao de inserir um elemento no heap 
     def _heapify_up(self, i):
         parent = self.parent(i)
         if i > 0 and self.heap[i][0] < self.heap[parent][0]:
             self.swap(i, parent)
             self._heapify_up(parent)
     
+    # Funcao de extrair o elemento minimo do heap
     def extract_min(self):
-        if len(self.heap) == 0:
+        if len(self.heap) == 0: # Se o heap estiver vazio, retorna None
             return None
         
-        if len(self.heap) == 1:
+        if len(self.heap) == 1: # Se tiver só um elemento, retorna ele
             return self.heap.pop()
         
-        min_val = self.heap[0]
+        # Se não...
+        # Retira o minimo e reestrutura o heap
+        min_val = self.heap[0] 
         self.heap[0] = self.heap.pop()
         self._heapify_down(0)
         return min_val
     
+    # Função para reestruturar o heap após a extração do minimo
     def _heapify_down(self, i):
         min_index = i
         left = self.left_child(i)
